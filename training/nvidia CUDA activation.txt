@@ -42,15 +42,4 @@ The last few lines of my output shows...
 physical GPU (device: 0, name: Quadro P5000, pci bus id: 0000:03:00.0, compute capability: 6.1)
 physical GPU (device: 1, name: Quadro P5000, pci bus id: 0000:a1:00.0, compute capability: 6.1)
 
-I have 2 GPUs. 
-
-But on Windows you will not be able to efficiently use both GPUs for training. 
-
-#On windows sysems you cannot install NCCL that is required for multi GPU
-#So we need to follow Heirarchial copy method or reduce to single GPU.
- 
-strategy = tf.distribute.MirroredStrategy(devices=devices_names[:n_gpus],
-                                           cross_device_ops=tf.distribute.HierarchicalCopyAllReduce())
-
-#The following will raise an error on Windows about NCCL. 
-#strategy = tf.distribute.MirroredStrategy(devices=devices_names[:n_gpus])
+I have 2 GPUs.
