@@ -1,0 +1,56 @@
+Step 1: Install Visual Studio community edition: I installed VS2019
+https://visualstudio.microsoft.com/vs...
+
+Step 2: Install your IDE if you haven't already done so. I installed Spyder 4.1.5 via Anaconda individual edition.
+https://www.anaconda.com/products/ind...
+
+Step 3: Setup a separate environment for your IDE. I created an env. with python 3.7
+I skipped 3.8 as it is relatively new and some of my libraries may not be tested or available. 
+On Anaconda you can use Anaconda Navigaor to create a new environment. 
+If you only see 3.8 as option on Navigator you can create new env from anaconda prompt: 
+conda create -n py37gpu python=3.7 anaconda
+
+For the following steps verify instructions from www.tensorflow.org/install/gpu
+
+Step 4: Verify your GPU is actually supported for deep learning: 
+https://developer.nvidia.com/cuda-gpus
+
+Step 5: Figure out your GPU model: I have P5000 Quadro
+and Update the GPU driver: For me it updated to Version 461.72 
+https://www.nvidia.com/download/index...
+
+Step 6: Download and install CUDA Toolkit. I installed Version 11.0
+https://developer.nvidia.com/cuda-too...
+
+Step 7: Download cuDNN. I downloaded version 8.0.4
+You need to sign up for Nvidia developer program (free)
+Extract all folder contents from cudnn you just downloaded to 
+C:\program files\Nvidia GPU computing toolkit\CUDA\v11.0
+
+Step 8: Install tensorflow
+Open spyder in the new environment that got named as: py37gpu (or whatever name you assigned)
+- pip install tensorflow
+
+Step 9: Verify the installation
+Create a new python file and run these lines to test if GPU is recognized by tensorflow. 
+import tensorflow as tf
+tf.test.is_gpu_available(
+    cuda_only=False, min_cuda_compute_capability=None
+)
+
+The last few lines of my output shows...
+physical GPU (device: 0, name: Quadro P5000, pci bus id: 0000:03:00.0, compute capability: 6.1)
+physical GPU (device: 1, name: Quadro P5000, pci bus id: 0000:a1:00.0, compute capability: 6.1)
+
+I have 2 GPUs. 
+
+But on Windows you will not be able to efficiently use both GPUs for training. 
+
+#On windows sysems you cannot install NCCL that is required for multi GPU
+#So we need to follow Heirarchial copy method or reduce to single GPU.
+ 
+strategy = tf.distribute.MirroredStrategy(devices=devices_names[:n_gpus],
+                                           cross_device_ops=tf.distribute.HierarchicalCopyAllReduce())
+
+#The following will raise an error on Windows about NCCL. 
+#strategy = tf.distribute.MirroredStrategy(devices=devices_names[:n_gpus])
